@@ -2,7 +2,7 @@ from time import time
 
 from ..config.logger_config import get_logger
 
-logger = get_logger()
+# # logger = get_logger()
 
 def timer_func(func):
     # This function shows the execution time of
