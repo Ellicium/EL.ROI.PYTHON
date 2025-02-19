@@ -32,6 +32,8 @@ MANIFEST
 *.manifest
 *.spec
 
+data_modified2.xlsx
+data_modified4.xlsx
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
