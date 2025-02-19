@@ -19,7 +19,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],  # Expose all response headers to the client
 )
+
 
 
 app.include_router(excel_operations.router)
