@@ -30,19 +30,41 @@ async def excel_operation(file: UploadFile = File(...)
         # Convert binary to a file-like object
         excel_file = BytesIO(contents)
         
-        EXCEL_FILE_PATH=modify_excel_fields(excel_file)
 
-        false_response={'response_code':400,'Message':'Excel Not Updated Please Try Again'}
-                
-        if EXCEL_FILE_PATH==0:
-            return JSONResponse(false_response,status_code=false_response['response_code'])
+        EXCEL_FILE_PATH, return_dictt = modify_excel_fields(excel_file)
 
+        if EXCEL_FILE_PATH == 0:
+            return JSONResponse(
+                content={"response_code": 400, "message": "Excel Not Updated. Please Try Again"},
+                status_code=400
+            )
 
-        return FileResponse(
+        # Attach extra data to response
+        response = FileResponse(
             path=EXCEL_FILE_PATH,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             filename="downloaded_excel.xlsx"
         )
+
+        # Add extra data in headers
+        for key, value in return_dictt.items():
+            response.headers[key] = str(value)  # Convert values to string for headers
+
+        return response
+
+        # EXCEL_FILE_PATH=modify_excel_fields(excel_file)
+
+        # false_response={'response_code':400,'Message':'Excel Not Updated Please Try Again'}
+                
+        # if EXCEL_FILE_PATH==0:
+        #     return JSONResponse(false_response,status_code=false_response['response_code'])
+
+
+        # return FileResponse(
+        #     path=EXCEL_FILE_PATH,
+        #     media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        #     filename="downloaded_excel.xlsx"
+        # )
      
     except Exception as e:
         logger.error("print_input failed", exc_info=e)

@@ -154,6 +154,26 @@ def modify_excel_fields(excel_file):
         ws['AA'+str(max_row)].value = (roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
 
 
+        # # do_not write in excel
+        # FTE_Saved_Day = roi['FTE Saved/Day'].sum()/len(roi['FTE Saved/Day'])
+        # BOT_MHT_AHT_Min = roi['BOT MHT / AHT (Min)'].sum()/len(roi['BOT MHT / AHT (Min)'])
+        # # BOT_FTE = roi['BOT FTE'].sum()/len(roi['BOT FTE'])
+        # # FTE_Cost= roi['FTE Cost'].sum()/len(roi['FTE Cost'])
+
+        # # ---
+        # BOT_FTE_Required_Day=roi['BOT FTE Required / Day'].sum()/len(roi['BOT FTE Required / Day'])
+        # FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()/len(roi['FTE Cost After BOT Implementation(Per Day)'])
+        # Infra_Cost_Per_Day=roi['Infra Cost (Per Day)'].sum()/len(roi['Infra Cost (Per Day)'])
+        # License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
+        # Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
+        # Total_Cost_Excluding_Development_Creater_Cost=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
+
+        # # Save the updated Excel file
+        # wb.save("data_modified2.xlsx")
+        # print('writtennnnnn')
+        # return "data_modified2.xlsx"
+
+
         # do_not write in excel
         FTE_Saved_Day = roi['FTE Saved/Day'].sum()/len(roi['FTE Saved/Day'])
         BOT_MHT_AHT_Min = roi['BOT MHT / AHT (Min)'].sum()/len(roi['BOT MHT / AHT (Min)'])
@@ -167,13 +187,40 @@ def modify_excel_fields(excel_file):
         License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
         Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
         Total_Cost_Excluding_Development_Creater_Cost=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
+        ROI_in_Rupees=roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum()
+        ROI_In_Percent=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
+
+
+
+
+        return_dict={
+
+            'FTE_Saved_Day':FTE_Saved_Day,
+            'BOT_MHT_AHT_Min':BOT_MHT_AHT_Min,
+            'BOT_FTE':None,
+            'FTE_Cost':None,
+            'BOT_FTE_Required_Day':BOT_FTE_Required_Day,
+            'FTE_Cost_After_BOT_Implementation':FTE_Cost_After_BOT_Implementation,
+            'Infra_Cost_Per_Day':Infra_Cost_Per_Day,
+            'License_Cost_Per_Day':License_Cost_Per_Day,
+            'Development_Support':Development_Support,
+            'Total_Cost_Excluding_Development_Creater_Cost':Total_Cost_Excluding_Development_Creater_Cost,
+            'ROI_in_Rupees':ROI_in_Rupees,
+            'ROI_In_Percent':ROI_In_Percent*100
+
+        }
 
         # Save the updated Excel file
         wb.save("data_modified2.xlsx")
         print('writtennnnnn')
-        return "data_modified2.xlsx"
+        return ["data_modified2.xlsx",return_dict]
+
+        
     except:
         return 0
+
+    # except:
+    #     return 0
     
 
 def update_user_values(val):
@@ -415,7 +462,7 @@ def update_user_values(val):
             'Development_Support':Development_Support,
             'Total_Cost_Excluding_Development_Creater_Cost':Total_Cost_Excluding_Development_Creater_Cost,
             'ROI_in_Rupees':ROI_in_Rupees,
-            'ROI_In_Percent':ROI_In_Percent
+            'ROI_In_Percent':ROI_In_Percent*100
 
         }
 
