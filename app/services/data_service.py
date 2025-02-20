@@ -110,8 +110,7 @@ def modify_excel_fields(excel_file):
 
 
         row_cols_to_sum=['FTE Cost After BOT Implementation(Per Day)',
-            'Infra Cost (Per Day)', 'Runner', 'Creater', 'OCR', 'Development',
-            'Support']
+            'Infra Cost (Per Day)', 'Runner', 'OCR', 'Support']
 
         roi['Total Cost (Excluding Development & Creater Cost)'] = roi[row_cols_to_sum].sum(axis=1)
         roi['ROI in Rupees (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
