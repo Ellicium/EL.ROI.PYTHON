@@ -65,14 +65,18 @@ def modify_excel_fields(excel_file):
                 percentage=assumptions['BOT Accuracy - Complex'][0]
             else:
                 percentage=assumptions['BOT Accuracy - Simple'][0]
-
+            print('percentage',percentage)
             return percentage
             
         def check_prod(val):
             if str(val).lower()=='y':
                 return 0
             return 1
-
+        
+        def check_ocr(val):
+            if str(val).lower().strip()=='ocr':
+                return 1
+            return 0
 
         roi=roi[:-1]
         roi['Manual FTE Required/Day']=roi['AverageTransactions(Annual)']*roi['Manual MHT / AHT in Min /Transaction']/assumptions['Mins Per Hour'][0]/assumptions['Working Days in a Year'][0]/assumptions['Working Hours per Day'][0]
@@ -84,7 +88,7 @@ def modify_excel_fields(excel_file):
         roi['calculate_percentage']=roi['Complexity'].apply(calculate_BOT_HT_AHT)
         roi['FTE Saved/Day']=roi['Manual FTE Required/Day']*roi['calculate_percentage']
 
-        roi['BOT MHT / AHT (Min)']=(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))+(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))*.2
+        roi['BOT MHT / AHT (Min)']=(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))+(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))*.02
 
 
 
@@ -97,7 +101,12 @@ def modify_excel_fields(excel_file):
         roi['OCR']=(assumptions['Document Automation Cost'][0]/assumptions['Number Of Documents per OCR License'][0])*(roi['AverageTransactions(Annual)']/assumptions['BOT Days in a Year'][0])
 
         roi['checkProduction']=roi['Already in Production'].apply(check_prod)
-        roi['OCR']=roi['OCR']*roi['checkProduction']
+
+        roi['check_ocr']=roi['OCR/NON-OCR'].apply(check_ocr)
+        roi['OCR']=roi['OCR']*roi['check_ocr']
+        roi['Support']=(math.ceil(len(roi['UseCase'])/8)*100000/len(roi['UseCase']))/assumptions['BOT Number of Days Per Month'][0]
+        
+        # roi['OCR']=roi['OCR']*roi['checkProduction']
 
 
         row_cols_to_sum=['FTE Cost After BOT Implementation(Per Day)',
@@ -107,9 +116,10 @@ def modify_excel_fields(excel_file):
         roi['Total Cost (Excluding Development & Creater Cost)'] = roi[row_cols_to_sum].sum(axis=1)
         roi['ROI in Rupees (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
         roi['ROI In Percent']=(roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)'])/roi['Total Cost (Per Day)']
-        roi['Support']=(math.ceil(len(roi['UseCase'])/8*100000)/assumptions['Number of Processes'][0])/assumptions['BOT Number of Days Per Month'][0]
+        
+        # (math.ceil(len(roi['UseCase'])/8*100000)/assumptions['Number of Processes'][0])/assumptions['BOT Number of Days Per Month'][0]
 
-        roi.drop(columns=['calculate_percentage','checkProduction'], inplace=True)
+        roi.drop(columns=['calculate_percentage','checkProduction','check_ocr'], inplace=True)
 
         # Load the original Excel file
 
@@ -186,7 +196,7 @@ def modify_excel_fields(excel_file):
         Infra_Cost_Per_Day=roi['Infra Cost (Per Day)'].sum()/len(roi['Infra Cost (Per Day)'])
         License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
         Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
-        Total_Cost_Excluding_Development_Creater_Cost=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
+        Total_Cost_Excluding_Development_Creater_Cost=roi['Total Cost (Excluding Development & Creater Cost)'].sum()
         ROI_in_Rupees=roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum()
         ROI_In_Percent=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
 
@@ -344,12 +354,18 @@ def update_user_values(val):
             else:
                 percentage=assumptions['BOT Accuracy - Simple'][0]
 
+            print('percentage',percentage)
             return percentage
             
         def check_prod(val):
             if str(val).lower()=='y':
                 return 0
             return 1
+        
+        def check_ocr(val):
+            if str(val).lower().strip()=='ocr':
+                return 1
+            return 0
 
 
         roi=roi[:-1]
@@ -362,8 +378,7 @@ def update_user_values(val):
         roi['calculate_percentage']=roi['Complexity'].apply(calculate_BOT_HT_AHT)
         roi['FTE Saved/Day']=roi['Manual FTE Required/Day']*roi['calculate_percentage']
 
-        roi['BOT MHT / AHT (Min)']=(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))+(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))*.2
-
+        roi['BOT MHT / AHT (Min)']=(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))+(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))*.02
 
 
         roi['BOT FTE Required / Day']=roi['Manual FTE Required/Day']-roi['FTE Saved/Day']
@@ -373,21 +388,28 @@ def update_user_values(val):
 
         roi['Creater']=(assumptions['Monthly Creater License Cost'][0]/assumptions['BOT Number of Days Per Month'][0])/assumptions['Creater License Average Out Time'][0]
         roi['OCR']=(assumptions['Document Automation Cost'][0]/assumptions['Number Of Documents per OCR License'][0])*(roi['AverageTransactions(Annual)']/assumptions['BOT Days in a Year'][0])
+        roi['Support']=(math.ceil(len(roi['UseCase'])/8)*100000/len(roi['UseCase']))/assumptions['BOT Number of Days Per Month'][0]
+        # (math.ceil(23/8)*100000/23)/30
 
         roi['checkProduction']=roi['Already in Production'].apply(check_prod)
-        roi['OCR']=roi['OCR']*roi['checkProduction']
 
+        roi['check_ocr']=roi['OCR/NON-OCR'].apply(check_ocr)
+
+        roi['OCR']=roi['OCR']*roi['check_ocr']
+        print('OCR COLUMN',roi['OCR'],roi['checkProduction'])
 
         row_cols_to_sum=['FTE Cost After BOT Implementation(Per Day)',
-            'Infra Cost (Per Day)', 'Runner', 'Creater', 'OCR', 'Development',
+            'Infra Cost (Per Day)', 'Runner', 'OCR',
             'Support']
+        
+        # print('sum',roi['FTE Cost After BOT Implementation(Per Day)'][0],roi['Infra Cost (Per Day)'][0],roi['Runner'][0],roi['OCR'][0], roi['Support'][0])
 
-        roi['Total Cost (Excluding Development & Creater Cost)'] = roi[row_cols_to_sum].sum(axis=1)
+        roi['Total Cost (Excluding Development & Creater Cost)'] =roi[row_cols_to_sum].sum(axis=1, skipna=True)
+
         roi['ROI in Rupees (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
         roi['ROI In Percent']=(roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)'])/roi['Total Cost (Per Day)']
-        roi['Support']=(math.ceil(len(roi['UseCase'])/8*100000)/assumptions['Number of Processes'][0])/assumptions['BOT Number of Days Per Month'][0]
 
-        roi.drop(columns=['calculate_percentage','checkProduction'], inplace=True)
+        roi.drop(columns=['calculate_percentage','checkProduction','check_ocr'], inplace=True)
 
         # Load the original Excel file
 
@@ -444,10 +466,15 @@ def update_user_values(val):
         Infra_Cost_Per_Day=roi['Infra Cost (Per Day)'].sum()/len(roi['Infra Cost (Per Day)'])
         License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
         Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
-        Total_Cost_Excluding_Development_Creater_Cost=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
+        Total_Cost_Excluding_Development_Creater_Cost=roi['Total Cost (Excluding Development & Creater Cost)'].sum()
         ROI_in_Rupees=roi['ROI in Rupees (Per Day)'][0]
         ROI_In_Percent=roi['ROI In Percent'][0]
 
+
+        #BOT FTE
+
+        percentage=calculate_BOT_HT_AHT(roi['Complexity'][0])
+        
 
         return_dict={
 
@@ -462,7 +489,8 @@ def update_user_values(val):
             'Development_Support':Development_Support,
             'Total_Cost_Excluding_Development_Creater_Cost':Total_Cost_Excluding_Development_Creater_Cost,
             'ROI_in_Rupees':ROI_in_Rupees,
-            'ROI_In_Percent':ROI_In_Percent*100
+            'ROI_In_Percent':ROI_In_Percent*100,
+            'BOT_FTE_Calculated':roi['Manual FTE Required/Day'][0]*percentage
 
         }
 
