@@ -217,7 +217,7 @@ def modify_excel_fields(excel_file):
             'Total_Cost_Excluding_Development_Creater_Cost':Total_Cost_Excluding_Development_Creater_Cost,
             'ROI_in_Rupees':ROI_in_Rupees,
             'ROI_In_Percent':ROI_In_Percent*100,
-            'BOT_FTE_Calculated':roi['Manual FTE Required/Day'][0]*percentage,
+            'BOT_FTE_Calculated':roi['Manual FTE Required/Day'].mean()*percentage,
             'Manual_Cost':roi['Total Cost (Per Day)'].sum()
         }
 
