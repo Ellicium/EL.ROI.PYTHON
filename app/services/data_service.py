@@ -200,14 +200,15 @@ def modify_excel_fields(excel_file):
         ROI_In_Percent=(roi['Total Cost (Per Day)'].sum()-roi['Total Cost (Excluding Development & Creater Cost)'].sum())/roi['Total Cost (Per Day)'].sum()
 
 
-
+        
+        percentage=calculate_BOT_HT_AHT(roi['Complexity'][0])
 
         return_dict={
 
             'FTE_Saved_Day':FTE_Saved_Day,
             'BOT_MHT_AHT_Min':BOT_MHT_AHT_Min,
-            'BOT_FTE':None,
-            'FTE_Cost':None,
+            # 'BOT_FTE':None,
+            # 'FTE_Cost':None,
             'BOT_FTE_Required_Day':BOT_FTE_Required_Day,
             'FTE_Cost_After_BOT_Implementation':FTE_Cost_After_BOT_Implementation,
             'Infra_Cost_Per_Day':Infra_Cost_Per_Day,
@@ -215,8 +216,9 @@ def modify_excel_fields(excel_file):
             'Development_Support':Development_Support,
             'Total_Cost_Excluding_Development_Creater_Cost':Total_Cost_Excluding_Development_Creater_Cost,
             'ROI_in_Rupees':ROI_in_Rupees,
-            'ROI_In_Percent':ROI_In_Percent*100
-
+            'ROI_In_Percent':ROI_In_Percent*100,
+            'BOT_FTE_Calculated':roi['Manual FTE Required/Day'][0]*percentage,
+            'Manual_Cost':roi['Total Cost (Per Day)'].sum()
         }
 
         # Save the updated Excel file
@@ -224,7 +226,6 @@ def modify_excel_fields(excel_file):
         print('writtennnnnn')
         return ["data_modified2.xlsx",return_dict]
 
-        
     except:
         return 0
 
@@ -479,8 +480,8 @@ def update_user_values(val):
 
             'FTE_Saved_Day':FTE_Saved_Day,
             'BOT_MHT_AHT_Min':BOT_MHT_AHT_Min,
-            'BOT_FTE':None,
-            'FTE_Cost':None,
+            # 'BOT_FTE':None,
+            # 'FTE_Cost':None,
             'BOT_FTE_Required_Day':BOT_FTE_Required_Day,
             'FTE_Cost_After_BOT_Implementation':FTE_Cost_After_BOT_Implementation,
             'Infra_Cost_Per_Day':Infra_Cost_Per_Day,
@@ -489,8 +490,8 @@ def update_user_values(val):
             'Total_Cost_Excluding_Development_Creater_Cost':Total_Cost_Excluding_Development_Creater_Cost,
             'ROI_in_Rupees':ROI_in_Rupees,
             'ROI_In_Percent':ROI_In_Percent*100,
-            'BOT_FTE_Calculated':roi['Manual FTE Required/Day'][0]*percentage
-
+            'BOT_FTE_Calculated':roi['Manual FTE Required/Day'][0]*percentage,
+            'Manual_Cost':roi['Total Cost (Per Day)'].sum()
         }
 
         # Save the updated Excel file
