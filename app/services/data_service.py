@@ -191,7 +191,8 @@ def modify_excel_fields(excel_file):
 
         # ---
         BOT_FTE_Required_Day=roi['BOT FTE Required / Day'].sum()/len(roi['BOT FTE Required / Day'])
-        FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()/len(roi['FTE Cost After BOT Implementation(Per Day)'])
+        FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()
+        # FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()/len(roi['FTE Cost After BOT Implementation(Per Day)'])
         Infra_Cost_Per_Day=roi['Infra Cost (Per Day)'].sum()/len(roi['Infra Cost (Per Day)'])
         License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
         Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
@@ -462,7 +463,8 @@ def update_user_values(val):
 
         # ---
         BOT_FTE_Required_Day=roi['BOT FTE Required / Day'].sum()/len(roi['BOT FTE Required / Day'])
-        FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()/len(roi['FTE Cost After BOT Implementation(Per Day)'])
+        # FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()/len(roi['FTE Cost After BOT Implementation(Per Day)'])
+        FTE_Cost_After_BOT_Implementation=roi['FTE Cost After BOT Implementation(Per Day)'].sum()
         Infra_Cost_Per_Day=roi['Infra Cost (Per Day)'].sum()/len(roi['Infra Cost (Per Day)'])
         License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
         Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
