@@ -508,7 +508,7 @@ def update_user_values(val):
 
 
 
-def modify_excel_fields_v2(excel_file,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource):
+def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource):
     try:
         dictt={}
         dictt['monthly_vm_cost']= monthly_vm_cost
@@ -521,12 +521,12 @@ def modify_excel_fields_v2(excel_file,monthly_vm_cost,monthly_fte_cost,monthly_s
         dictt['support_cost_per_resource']= support_cost_per_resource
         dictt['monthly_developer_cost_per_resource']=monthly_developer_cost_per_resource
 
-        filepath="RPA-ROI-Calculator v4.0 - Copy.xlsx"#r"C:\Users\Krushna_Kadam\Downloads\RPA-ROI-Calculator v4.0 - Copy.xlsx"
+        # filepath="RPA-ROI-Calculator v4.0 - Copy.xlsx"#r"C:\Users\Krushna_Kadam\Downloads\RPA-ROI-Calculator v4.0 - Copy.xlsx"
         # Load the Excel data into a pandas DataFrame
         #read assumptions sheet
 
         print('load_workbook')
-        wb = load_workbook(filepath)
+        wb = load_workbook(filepath, data_only=True)
         print('load_workbook donme')
         ws = wb["ROI"]
         wd = wb["Assumptions"]
@@ -573,7 +573,6 @@ def modify_excel_fields_v2(excel_file,monthly_vm_cost,monthly_fte_cost,monthly_s
         filepath='data_modified_5.xlsx'
         
         
-        filepath=excel_file
         # filepath=r"C:\Users\Krushna_Kadam\Downloads\RPA-ROI-Calculator v1.0.xlsx"
         # Load the Excel data into a pandas DataFrame
         roi = pd.read_excel(filepath, sheet_name="ROI", header=[2,3 ])
@@ -777,6 +776,3 @@ def modify_excel_fields_v2(excel_file,monthly_vm_cost,monthly_fte_cost,monthly_s
 
     except:
         return 0
-
-    # except:
-    #     return 0
