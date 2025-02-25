@@ -253,7 +253,8 @@ def update_user_values(val):
         dictt['document_automation_cost']= val.document_automation_cost
         dictt['monthly_creater_licence_cost']= val.monthly_creater_licence_cost
         dictt['support_cost_per_resource']= val.support_cost_per_resource
-
+        dictt['monthly_developer_cost_per_resource']= val.monthly_developer_cost_per_resource
+    
         filepath="RPA-ROI-Calculator v4.0 - Copy.xlsx"#r"C:\Users\Krushna_Kadam\Downloads\RPA-ROI-Calculator v4.0 - Copy.xlsx"
         # Load the Excel data into a pandas DataFrame
         #read assumptions sheet
@@ -284,6 +285,7 @@ def update_user_values(val):
         document_automation_cost=input_dict['document_automation_cost']
         monthly_creater_licence_cost=input_dict['monthly_creater_licence_cost']
         support_cost_per_resource=input_dict['support_cost_per_resource']
+        monthly_developer_cost_per_resource=input_dict['monthly_developer_cost_per_resource']
 
 
         # over write user input values
@@ -309,6 +311,10 @@ def update_user_values(val):
             wd['B23']=monthly_creater_licence_cost
         if support_cost_per_resource is not None:
             wd['B27']=support_cost_per_resource
+        if monthly_developer_cost_per_resource is not None:
+            wd['B26']=monthly_developer_cost_per_resource
+        
+        
 
         wb.save('data_modified4.xlsx')
 

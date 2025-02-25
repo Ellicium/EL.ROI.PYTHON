@@ -23,4 +23,5 @@ class user_input(BaseModel):
     document_automation_cost:Optional[float] = None
     monthly_creater_licence_cost:Optional[float] = None
     support_cost_per_resource:Optional[float] = None
+    monthly_developer_cost_per_resource:Optional[float] = None
     
