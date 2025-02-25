@@ -541,7 +541,7 @@ def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_sea
         document_automation_cost=input_dict['document_automation_cost']
         monthly_creater_licence_cost=input_dict['monthly_creater_licence_cost']
         support_cost_per_resource=input_dict['support_cost_per_resource']
-        monthly_developer_cost_per_resource-input_dict['monthly_developer_cost_per_resource']
+        monthly_developer_cost_per_resource=input_dict['monthly_developer_cost_per_resource']
 
         # over write user input values
         if monthly_vm_cost is not None:
