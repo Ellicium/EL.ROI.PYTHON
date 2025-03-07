@@ -159,7 +159,7 @@ def update_column_b(source_path, destination_path, sheet_name):
     ws = wb[sheet_name]
 
     # ✅ Overwrite values in column B (starting from row 2)
-    for i, value in enumerate(df_source.iloc[:, 0], start=2):  
+    for i, value in enumerate(df_source.iloc[:, 0], start=1):  
         ws[f'B{i}'] = value  # Update column B values
 
     # ✅ Save changes
