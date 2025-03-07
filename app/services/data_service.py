@@ -17,6 +17,165 @@ import math
 # # logger = get_logger()
 load_dotenv()
 
+# ---------------------------------
+
+
+
+
+
+import pandas as pd
+from openpyxl import load_workbook
+import openpyxl
+from openpyxl.styles import Font, Border, Alignment, PatternFill
+from openpyxl.drawing.image import Image
+
+
+
+def read_df(filepath):
+    # filepath=r"C:\Users\Krushna_Kadam\Downloads\RPA-ROI-Calculator v1.0.xlsx"
+    # Load the Excel data into a pandas DataFrame
+    roi = pd.read_excel(filepath, sheet_name="ROI", header=[2,3 ])
+    roi.columns = pd.MultiIndex.from_tuples([(col[0].strip(), col[1].strip()) for col in roi.columns])
+
+    columns_to_change = ['License Cost (Per Day)','Development & Support']  # Columns to rename using sub-column names
+
+    # Create new column names
+    new_columns = [
+        col[1] if col[0] in columns_to_change else col[0] 
+        for col in roi.columns
+    ]
+
+    # Assign new column names
+    roi.columns = new_columns
+    roi.columns = roi.columns.str.strip()
+    roi = roi.iloc[:-1]  
+
+    return roi
+
+
+import shutil,datetime
+
+def add_empty_rows(file_path, sheet_name, num_new_rows):
+    # Load the existing workbook and sheet
+    # file_path = r"C:\Users\Krushna_Kadam\Documents\RPA Template\Template V2.0.xlsx"
+    # sheet_name = "ROI"
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    destination_path= r"Template V2.0_"+timestamp+'.xlsx'
+    shutil.copy(file_path, destination_path)
+
+    wb = openpyxl.load_workbook(destination_path)
+    ws = wb[sheet_name]
+
+    # User input: Row number after which new rows should be added
+    input_row = 5  # Change this to your desired row number
+    # num_new_rows = 23  # Number of new rows to insert
+
+    # Store formatting and values of the reference row before inserting new rows
+    row_format_data = []
+    for col in range(1, ws.max_column + 1):
+        cell = ws.cell(row=input_row, column=col)
+        row_format_data.append({
+            "value": cell.value,
+            "font": Font(**cell.font.__dict__),  
+            "border": Border(**cell.border.__dict__),
+            "fill": PatternFill(**cell.fill.__dict__),
+            "number_format": cell.number_format,
+            "alignment": Alignment(**cell.alignment.__dict__)
+        })
+
+    # Insert new blank rows below the input row
+    ws.insert_rows(input_row + 1, amount=num_new_rows)
+
+    # Apply stored formatting and values to the newly inserted rows
+    for i in range(num_new_rows):
+        for col in range(1, ws.max_column + 1):
+            target_cell = ws.cell(row=input_row + 1 + i, column=col)
+            format_data = row_format_data[col - 1]
+
+            # Apply stored values and formatting
+            target_cell.value = format_data["value"]
+            target_cell.font = format_data["font"]
+            target_cell.border = format_data["border"]
+            target_cell.fill = format_data["fill"]
+            target_cell.number_format = format_data["number_format"]
+            target_cell.alignment = format_data["alignment"]
+
+
+
+
+    merged_ranges = list(ws.merged_cells.ranges)  # Copy ranges to avoid modifying while iterating
+    for merged_range in merged_ranges:
+        if merged_range.min_row == 6:  # Check if the merged range includes row 6
+            ws.unmerge_cells(str(merged_range))
+
+    # ✅ Step 2: Delete the 6th row
+    ws.delete_rows(6)
+
+
+    last_row = ws.max_row  
+    print('last_row',last_row)
+    # Merge the first 8 cells (A-H) in the last row
+    merge_range = f"A{last_row}:H{last_row}"  # Merging from column A to H
+    ws.merge_cells(merge_range)
+
+
+    # Save the workbook
+    wb.save(destination_path)
+
+    print(f"{num_new_rows} new rows added below row {input_row}, with formatting copied!")
+    return destination_path
+
+
+
+def write_df_to_excel(file_path, sheet_name, df, start_row=5):
+    """
+    Writes a Pandas DataFrame to an existing Excel file, starting from a specific row.
+    
+    :param file_path: Path to the Excel file
+    :param sheet_name: Name of the sheet to write the data
+    :param df: Pandas DataFrame to write
+    :param start_row: Row number where writing should start (default is 5)
+    """
+    # Load existing workbook
+    with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+        df.to_excel(writer, sheet_name=sheet_name, startrow=start_row - 1, index=False, header=False)
+
+    print(f"DataFrame written to {sheet_name} starting from row {start_row} successfully!")
+
+
+def update_column_b(source_path, destination_path, sheet_name):
+    """
+    Reads values from column B in the source Excel file and overwrites column B in the destination Excel file.
+
+    :param source_path: Path to the source Excel file
+    :param destination_path: Path to the destination Excel file
+    :param sheet_name: Name of the sheet where the update should happen
+    """
+    # ✅ Read column B from source file using column index
+    df_source = pd.read_excel(source_path, sheet_name=sheet_name, usecols=[1], header=None)
+
+    # ✅ Load destination workbook
+    wb = load_workbook(destination_path)
+    ws = wb[sheet_name]
+
+    # ✅ Overwrite values in column B (starting from row 2)
+    for i, value in enumerate(df_source.iloc[:, 0], start=2):  
+        ws[f'B{i}'] = value  # Update column B values
+
+    # ✅ Save changes
+    wb.save(destination_path)
+    print("Column B updated successfully!")
+
+
+def fill_data(filepath):
+    roi=read_df(filepath)
+    getfile=add_empty_rows(r"Template V2.0.xlsx", "ROI", len(roi))
+    write_df_to_excel(getfile, "ROI", roi, start_row=5)
+    update_column_b(filepath,getfile,'Assumptions')
+    return getfile
+
+# fill_data(r"C:\Users\Krushna_Kadam\Documents\RPA Template\RPA-ROI-Calculator v1.0_test.xlsx")
+
 
 
 
@@ -516,6 +675,8 @@ def update_user_values(val):
 
 def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource):
     try:
+
+        filepath=fill_data(filepath)
         dictt={}
         dictt['monthly_vm_cost']= monthly_vm_cost
         dictt['monthly_fte_cost']= monthly_fte_cost
