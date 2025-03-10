@@ -735,7 +735,7 @@ def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_sea
 
         wb.save('data_modified_5.xlsx')
 
-
+        os.remove(os.path.join(os.getcwd(), filepath))
 
         filepath='data_modified_5.xlsx'
         

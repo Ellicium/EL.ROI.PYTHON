@@ -5,10 +5,10 @@ from fastapi.responses import FileResponse
 from fastapi import APIRouter, Depends
 from fastapi.logger import logger
 from fastapi.responses import JSONResponse
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, BackgroundTasks
+
 from io import BytesIO
 from typing import Optional
-
 import requests
 
 # from ..config.auth_middleware import verify_and_decode_token
@@ -146,7 +146,9 @@ async def excel_operation(apipostschema:user_input
 
 
 @router.post("/data/excel_transformations_v2", tags=["data"])
-async def excel_operation_v2( file: UploadFile = File(...),
+async def excel_operation_v2(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
     monthly_vm_cost: Optional[float] = Form(None),
     monthly_fte_cost: Optional[float] = Form(None),
     monthly_seat_cost: Optional[float] = Form(None),
@@ -183,6 +185,11 @@ async def excel_operation_v2( file: UploadFile = File(...),
         # Add extra data in headers
         for key, value in return_dictt.items():
             response.headers[key] = str(value)  # Convert values to string for headers
+
+        
+        background_tasks.add_task(os.remove, os.path.join(os.getcwd(), EXCEL_FILE_PATH))
+
+        print(os.path.join(os.getcwd(), EXCEL_FILE_PATH))
 
         return response
 
