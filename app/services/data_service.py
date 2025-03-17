@@ -272,7 +272,7 @@ def modify_excel_fields(excel_file):
             'Infra Cost (Per Day)', 'Runner', 'OCR', 'Support']
 
         roi['Total Cost (Excluding Development & Creater Cost)'] = roi[row_cols_to_sum].sum(axis=1)
-        roi['ROI in Rupees (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
+        roi['ROI (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
         roi['ROI In Percent']=(roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)'])/roi['Total Cost (Per Day)']
         
         # (math.ceil(len(roi['UseCase'])/8*100000)/assumptions['Number of Processes'][0])/assumptions['BOT Number of Days Per Month'][0]
@@ -572,7 +572,7 @@ def update_user_values(val):
 
         roi['Total Cost (Excluding Development & Creater Cost)'] =roi[row_cols_to_sum].sum(axis=1, skipna=True)
 
-        roi['ROI in Rupees (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
+        roi['ROI (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
         roi['ROI In Percent']=(roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)'])/roi['Total Cost (Per Day)']
 
         roi.drop(columns=['calculate_percentage','checkProduction','check_ocr'], inplace=True)
@@ -634,7 +634,7 @@ def update_user_values(val):
         License_Cost_Per_Day=roi['Runner'].sum()/len(roi['Runner'])+roi['Creater'].sum()/len(roi['Creater'])+roi['OCR'].sum()/len(roi['OCR'])
         Development_Support=roi['Development'].sum()/len(roi['Development'])+roi['Support'].sum()/len(roi['Support'])
         Total_Cost_Excluding_Development_Creater_Cost=roi['Total Cost (Excluding Development & Creater Cost)'].sum()
-        ROI_in_Rupees=roi['ROI in Rupees (Per Day)'][0]
+        ROI_in_Rupees=roi['ROI (Per Day)'][0]
         ROI_In_Percent=roi['ROI In Percent'][0]
 
 
@@ -827,7 +827,7 @@ def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_sea
             'Infra Cost (Per Day)', 'Runner', 'OCR', 'Support']
 
         roi['Total Cost (Excluding Development & Creater Cost)'] = roi[row_cols_to_sum].sum(axis=1)
-        roi['ROI in Rupees (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
+        roi['ROI (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
         roi['ROI In Percent']=(roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)'])/roi['Total Cost (Per Day)']
         
         # (math.ceil(len(roi['UseCase'])/8*100000)/assumptions['Number of Processes'][0])/assumptions['BOT Number of Days Per Month'][0]
