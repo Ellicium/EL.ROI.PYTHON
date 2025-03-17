@@ -167,9 +167,12 @@ def update_column_b(source_path, destination_path, sheet_name):
     print("Column B updated successfully!")
 
 
-def fill_data(filepath):
+def fill_data(filepath,is_us):
     roi=read_df(filepath)
-    getfile=add_empty_rows(r"Template V2.0.xlsx", "ROI", len(roi))
+    file_location=r"Template V2.0.xlsx"
+    if is_us==1:
+        file_location=r"Template V2.0 Dollar.xlsx"
+    getfile=add_empty_rows(file_location, "ROI", len(roi))
     write_df_to_excel(getfile, "ROI", roi, start_row=5)
     update_column_b(filepath,getfile,'Assumptions')
     return getfile
@@ -413,8 +416,11 @@ def update_user_values(val):
         dictt['monthly_creater_licence_cost']= val.monthly_creater_licence_cost
         dictt['support_cost_per_resource']= val.support_cost_per_resource
         dictt['monthly_developer_cost_per_resource']= val.monthly_developer_cost_per_resource
-    
+
         filepath="RPA-ROI-Calculator v4.0 - Copy.xlsx"#r"C:\Users\Krushna_Kadam\Downloads\RPA-ROI-Calculator v4.0 - Copy.xlsx"
+
+        if val.is_us==1:
+            filepath="RPA-ROI-Calculator v4.0 - Copy - Dollar.xlsx"
         # Load the Excel data into a pandas DataFrame
         #read assumptions sheet
 
@@ -673,10 +679,10 @@ def update_user_values(val):
 
 
 
-def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource):
+def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource,is_us):
     try:
 
-        filepath=fill_data(filepath)
+        filepath=fill_data(filepath,is_us)
         dictt={}
         dictt['monthly_vm_cost']= monthly_vm_cost
         dictt['monthly_fte_cost']= monthly_fte_cost

@@ -158,6 +158,7 @@ async def excel_operation_v2(
     monthly_creater_licence_cost: Optional[float] = Form(None),
     support_cost_per_resource: Optional[float] = Form(None),
     monthly_developer_cost_per_resource: Optional[float] = Form(None),
+    is_us: Optional[bool] = Form(None),
 ):
     try:
            # Read the Excel file
@@ -167,7 +168,7 @@ async def excel_operation_v2(
         excel_file = BytesIO(contents)
         
 
-        EXCEL_FILE_PATH, return_dictt = modify_excel_fields_v2(excel_file,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource)
+        EXCEL_FILE_PATH, return_dictt = modify_excel_fields_v2(excel_file,monthly_vm_cost,monthly_fte_cost,monthly_seat_cost,monthly_fte_other_cost,monthly_runner_licence_cost,document_automation_cost,monthly_creater_licence_cost,support_cost_per_resource,monthly_developer_cost_per_resource,is_us)
 
         if EXCEL_FILE_PATH == 0:
             return JSONResponse(
