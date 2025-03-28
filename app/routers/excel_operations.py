@@ -14,7 +14,7 @@ import requests
 # from ..config.auth_middleware import verify_and_decode_token
 from ..config.logger_config import get_logger
 from ..schemas.data_schema import read_excel_file,user_input
-from ..services.data_service import modify_excel_fields,update_user_values, modify_excel_fields_v2
+from ..services.data_service import modify_excel_fields,update_user_values, modify_excel_fields_v2, update_user_values2
 # upload_bom_function,upload_po_function,upload_cost_breakdown_function,upload_material_breakdown_function
 
 router = APIRouter()
@@ -214,6 +214,24 @@ async def excel_operation_v2(
 
 
 
+
+
+
+
+@router.post("/data/user_input2", tags=["data"])
+async def excel_operation2(apipostschema:user_input
+):
+    try:
+        
+        return_dictt = update_user_values2(apipostschema)
+        if return_dictt==0:
+            return JSONResponse(f"error {e}", status_code=500)
+
+        return return_dictt
+     
+    except Exception as e:
+        logger.error("print_input failed", exc_info=e)
+        return JSONResponse(f"error {e}", status_code=500)
 
 
 

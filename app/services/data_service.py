@@ -949,3 +949,167 @@ def modify_excel_fields_v2(filepath,monthly_vm_cost,monthly_fte_cost,monthly_sea
 
     except:
         return 0
+
+
+
+
+
+
+def calculate_BOT_HT_AHT(Complexity_val):
+        percentage=0
+        if Complexity_val.lower().strip()=='medium':
+                percentage=0.80
+        elif Complexity_val.lower().strip()=='complex':
+                percentage=0.90
+        else:
+                percentage=0.70
+
+        print('percentage',percentage)
+        return percentage
+            
+def check_prod(val):
+        if str(val).lower()=='y':
+                return 0
+        return 1
+        
+def check_ocr(val):
+        if str(val).lower().strip()=='ocr':
+                return 1
+        return 0
+
+def update_user_values2(val):
+    try:
+        dictt={}
+        dictt['usecase']= val.usecase
+        dictt['frequency']= val.frequency
+        dictt['manual_mht_aht']= val.manual_mht_aht
+        dictt['avg_transaction_annual']= val.avg_transaction_annual
+        dictt['number_of_vms']= val.number_of_vms
+        dictt['is_ocr']= val.is_ocr
+        dictt['already_in_prod']= val.already_in_prod
+        dictt['complexivity']= val.complexivity
+        dictt['monthly_vm_cost']= val.monthly_vm_cost
+        dictt['monthly_fte_cost']= val.monthly_fte_cost
+        dictt['monthly_seat_cost']= val.monthly_seat_cost
+        dictt['monthly_fte_other_cost']= val.monthly_fte_other_cost
+        dictt['monthly_runner_licence_cost']= val.monthly_runner_licence_cost
+        dictt['document_automation_cost']= val.document_automation_cost
+        dictt['monthly_creater_licence_cost']= val.monthly_creater_licence_cost
+        dictt['support_cost_per_resource']= val.support_cost_per_resource
+        dictt['monthly_developer_cost_per_resource']= val.monthly_developer_cost_per_resource
+        dictt['is_us']=val.is_us
+
+        monthly_other_opex=6432
+        support_cost_per_resourse=100000
+
+        if dictt['is_us']==1:
+                monthly_other_opex=74.34
+                support_cost_per_resourse=1155.80
+
+
+        manual_fte_req= dictt['avg_transaction_annual']*dictt['manual_mht_aht']/60/200/6.5
+        # roi['Manual FTE Required/Day']=roi['AverageTransactions(Annual)']*roi['Manual MHT / AHT in Min /Transaction']/assumptions['Mins Per Hour'][0]/assumptions['Working Days in a Year'][0]/assumptions['Working Hours per Day'][0]
+
+        fte_cost_per_day=manual_fte_req*(dictt['monthly_fte_cost']/30)
+        # roi['FTE Cost (Per Day)']=roi['Manual FTE Required/Day']*(assumptions['Monthly FTE Cost'][0]/assumptions['Monthly Paid Days for FTE'][0])
+
+        seat_cost_per_day=manual_fte_req*(dictt['monthly_seat_cost']/30)
+
+        # roi['Seat Cost (Per Day)']=roi['Manual FTE Required/Day']*(assumptions['Monthly Seat Cost'][0]/assumptions['Monthly Paid Days for FTE'][0])
+
+        emp_cost_per_day=manual_fte_req*(dictt['monthly_fte_other_cost']/30)
+        # roi['Employee Cost (Others - Paid by )* Per Day']=roi['Manual FTE Required/Day']*(assumptions['Monthly FTEOther Cost'][0]/assumptions['Monthly Paid Days for FTE'][0])
+
+        other_opex_cost_per_day= manual_fte_req*(monthly_other_opex/30) #6432
+
+        # roi['Other OPEX Cost*Per Day']=roi['Manual FTE Required/Day']*(assumptions['Monthly Other OPEX'][0]/assumptions['Monthly Paid Days for FTE'][0])
+
+        total_cost_per_day=manual_fte_req*(((dictt['monthly_fte_cost']+dictt['monthly_seat_cost']+dictt['monthly_fte_other_cost']+monthly_other_opex))/30)
+        # roi['Total Cost (Per Day)']=roi['Manual FTE Required/Day']*(((assumptions['Monthly FTE Cost'][0]+assumptions['Monthly Seat Cost'][0]+assumptions['Monthly FTEOther Cost'][0]+assumptions['Monthly Other OPEX'][0]))/assumptions['Monthly Paid Days for FTE'][0])
+
+        calculate_percentage=calculate_BOT_HT_AHT(dictt['complexivity'])
+        # roi['calculate_percentage']=roi['Complexity'].apply(calculate_BOT_HT_AHT)
+        fte_saved_day=manual_fte_req*calculate_percentage
+
+        # roi['FTE Saved/Day']=roi['Manual FTE Required/Day']*roi['calculate_percentage']
+
+
+        bot_mht_aht_min=(dictt['manual_mht_aht']-(dictt['manual_mht_aht']*calculate_percentage))+(dictt['manual_mht_aht']-(dictt['manual_mht_aht']*calculate_percentage))*.02
+        # roi['BOT MHT / AHT (Min)']=(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))+(roi['Manual MHT / AHT in Min /Transaction']-(roi['Manual MHT / AHT in Min /Transaction']*roi['calculate_percentage']))*.02
+
+        bot_fte_required_day=manual_fte_req-fte_saved_day
+        # roi['BOT FTE Required / Day']=roi['Manual FTE Required/Day']-roi['FTE Saved/Day']
+
+        fte_cost_after_bot_implementation=bot_fte_required_day*(dictt['monthly_fte_cost']+dictt['monthly_seat_cost']+dictt['monthly_fte_other_cost']+monthly_other_opex)/30
+        # roi['FTE Cost After BOT Implementation(Per Day)']=roi['BOT FTE Required / Day']*(assumptions['Monthly FTE Cost'][0]+assumptions['Monthly Seat Cost'][0]+assumptions['Monthly FTEOther Cost'][0]+assumptions['Monthly Other OPEX'][0])/assumptions['BOT Number of Days Per Month'][0]
+
+        infra_cost_per_day= ((( dictt['monthly_vm_cost']* dictt['number_of_vms'] )/ 1 )/ 30)
+        # roi['Infra Cost (Per Day)']=(((assumptions['Monthly VM Cost'][0]*assumptions["Number of VM's"][0])/assumptions['Number of Processes'][0])/assumptions['BOT Number of Days Per Month'][0])
+
+
+        runner=(((  dictt['avg_transaction_annual']/ 365 )* bot_mht_aht_min )/ 60* dictt['monthly_runner_licence_cost']/ (30*24))
+        # roi['Runner']=(((roi['AverageTransactions(Annual)']/assumptions['BOT Days in a Year'][0])*roi['BOT MHT / AHT (Min)'])/assumptions['Mins Per Hour'][0])*(assumptions['Monthly Runner License Cost'][0]/(assumptions['BOT Number of Days Per Month'][0]*assumptions['BOT Number of Hours in a Day'][0]))
+
+
+        creater= (dictt['monthly_creater_licence_cost']/30)/3
+        # roi['Creater']=(assumptions['Monthly Creater License Cost'][0]/assumptions['BOT Number of Days Per Month'][0])/assumptions['Creater License Average Out Time'][0]
+
+        ocr= (dictt['document_automation_cost']/5000)*dictt['avg_transaction_annual']/365
+        # roi['OCR']=(assumptions['Document Automation Cost'][0]/assumptions['Number Of Documents per OCR License'][0])*(roi['AverageTransactions(Annual)']/assumptions['BOT Days in a Year'][0])
+
+        support= support_cost_per_resourse/30  #100000
+        # roi['Support']=(math.ceil(len(roi['UseCase'])/8)*100000/len(roi['UseCase']))/assumptions['BOT Number of Days Per Month'][0]
+        # (math.ceil(23/8)*100000/23)/30
+
+        checkProduction=check_prod(dictt['already_in_prod'])
+        # roi['checkProduction']=roi['Already in Production'].apply(check_prod)
+
+        check_ocr1=check_ocr(dictt['is_ocr'])
+        # roi['check_ocr']=roi['OCR/NON-OCR'].apply(check_ocr)
+        ocr=ocr*check_ocr1
+        # roi['OCR']=roi['OCR']*roi['check_ocr']
+        # print('OCR COLUMN',roi['OCR'],roi['checkProduction'])
+
+        # row_cols_to_sum=['FTE Cost After BOT Implementation(Per Day)',
+        #         'Infra Cost (Per Day)', 'Runner', 'OCR',
+        #         'Support']
+
+        # print('sum',roi['FTE Cost After BOT Implementation(Per Day)'][0],roi['Infra Cost (Per Day)'][0],roi['Runner'][0],roi['OCR'][0], roi['Support'][0])
+
+        total_cost_excluding_development_creator_cost= fte_cost_after_bot_implementation+infra_cost_per_day+runner+ocr+support
+        # roi['Total Cost (Excluding Development & Creater Cost)'] =roi[row_cols_to_sum].sum(axis=1, skipna=True)
+
+        roi_per_day=total_cost_per_day-total_cost_excluding_development_creator_cost
+        # roi['ROI (Per Day)']=roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)']
+        roi_in_percent= (total_cost_per_day-total_cost_excluding_development_creator_cost)/total_cost_per_day
+        # roi['ROI In Percent']=(roi['Total Cost (Per Day)']-roi['Total Cost (Excluding Development & Creater Cost)'])/roi['Total Cost (Per Day)']
+
+        # roi.drop(columns=['calculate_percentage','checkProduction','check_ocr'], inplace=True)
+
+        # Load the original Excel file
+
+
+        percentage=calculate_BOT_HT_AHT(dictt['complexivity'])
+
+
+        return_dict={
+
+                    'FTE_Saved_Day':fte_saved_day,
+                    'BOT_MHT_AHT_Min':bot_mht_aht_min,
+                    'BOT_FTE_Required_Day':bot_fte_required_day,
+                    'FTE_Cost_After_BOT_Implementation':fte_cost_after_bot_implementation,
+                    'Infra_Cost_Per_Day':infra_cost_per_day,
+                    'License_Cost_Per_Day':runner+creater+ocr,
+                    'Development_Support':support,
+                    'Total_Cost_Excluding_Development_Creater_Cost':total_cost_excluding_development_creator_cost,
+                    'ROI_in_Rupees':roi_per_day,
+                    'ROI_In_Percent':roi_in_percent*100,
+                    'BOT_FTE_Calculated': manual_fte_req*percentage,
+                    'Manual_Cost':total_cost_per_day
+                }
+        return return_dict
+
+    except:
+        return 0
+
+
